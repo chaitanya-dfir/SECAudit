@@ -12,7 +12,7 @@ SecAudit is a modular and professional-grade security audit tool for Linux serve
 ## 🚀 Getting Started
 
 ```bash
-git clone https://github.com/yourusername/secaudit.git
+git clone https://github.com/chaitanya-dfir/secaudit.git
 cd secaudit
 pip install -r requirements.txt
 sudo python3 main.py --scan
