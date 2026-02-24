@@ -1,12 +1,12 @@
 import logging
 import os
-from datetime import datetime
+import utils.logtimeformat as logtimeformat
 
 def setup_logger():
     log_dir = "logs"
     os.makedirs(log_dir, exist_ok=True)
 
-    log_filename = os.path.join(log_dir, f"secaudit_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log")
+    log_filename = os.path.join(log_dir, f"secaudit_{logtimeformat.utcTime()}.log")
 
     logger = logging.getLogger("SecAudit")
     logger.setLevel(logging.DEBUG)
