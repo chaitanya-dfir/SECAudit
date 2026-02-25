@@ -10,14 +10,19 @@ def setup_logger():
 
     logger = logging.getLogger("SecAudit")
     logger.setLevel(logging.DEBUG)
+    logger.propagate = False  # prevents double logging via root logger
 
-    file_handler = logging.FileHandler(log_filename)
+    # Prevent duplicate handlers if setup_logger() is called more than once
+    if logger.handlers:
+        return logger
+
+    file_handler = logging.FileHandler(log_filename, encoding="utf-8")
     file_handler.setLevel(logging.DEBUG)
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
 
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)
     console_handler.setFormatter(formatter)
 
