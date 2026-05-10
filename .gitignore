@@ -4,3 +4,5 @@ __pycache__/
 logs/
 reports/
 .env
+CLAUDE.md
+.claude/
