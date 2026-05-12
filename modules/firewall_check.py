@@ -28,3 +28,12 @@ def check_firewall_status():
         result["details"] = str(e)
 
     return result
+
+CHECKS = [
+    {
+        "id": "3.5.1.1",
+        "severity": "Critical",
+        "remediation": "Enable UFW with: ufw enable. Ensure rules are configured before enabling.",
+        "fn": check_firewall_status,
+    }
+]

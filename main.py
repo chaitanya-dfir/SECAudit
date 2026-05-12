@@ -1,8 +1,5 @@
 import argparse
-from modules.ssh_check import check_ssh_root_login
-from modules.users_check import check_privileged_users
-from modules.services_check import check_running_services
-from modules.firewall_check import check_firewall_status
+from modules import load_all_checks
 from utils.logger import setup_logger
 from utils.report import generate_markdown_report
 
@@ -12,14 +9,16 @@ def run_audit():
     logger.info("Starting security audit...")
     results = []
 
-    results.append(check_ssh_root_login())
-    results.append(check_privileged_users())
-    results.append(check_running_services())
-    results.append(check_firewall_status())
+    for check in load_all_checks():
+        result = check["fn"]()
+        result["id"] = check["id"]
+        result["severity"] = check["severity"]
+        result["remediation"] = check["remediation"]
+        results.append(result)
 
     for res in results:
         icon = "✅" if res["status"] == "Pass" else "❌" if res["status"] == "Fail" else "⚠️"
-        msg = f"{icon} {res['check']}: {res['status']} → {res['details']}"
+        msg = f"[{res['id']}] {icon} {res['check']}: {res['status']} — {res['details']}"
         logger.info(msg)
 
     return results
@@ -45,10 +44,10 @@ def main():
             report_file = generate_markdown_report(results)
             logger.info(f"📄 Report saved to {report_file}")
 
-    elif args.harden:
+    if args.harden:
         logger.info("[*] Hardening feature coming soon...")
 
-    elif not any(vars(args).values()):
+    if not any(vars(args).values()):
         parser.print_help()
 
 if __name__ == "__main__":

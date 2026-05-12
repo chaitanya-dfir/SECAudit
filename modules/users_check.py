@@ -29,3 +29,12 @@ def check_privileged_users():
         result["details"] = str(e)
 
     return result
+
+CHECKS = [
+    {
+        "id": "5.4.2",
+        "severity": "High",
+        "remediation": "Remove unauthorized UID 0 accounts and audit sudo/wheel group membership.",
+        "fn": check_privileged_users,
+    }
+]
