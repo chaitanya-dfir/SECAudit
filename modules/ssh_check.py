@@ -293,6 +293,45 @@ def check_client_alive_interval():
 
     return result
 
+def check_client_alive_count_max():
+    result = {
+        "check": "SSH ClientAliveCountMax",
+        "status": "Unknown",
+        "details": ""
+    }
+
+    try:
+        with open("/etc/ssh/sshd_config", "r") as f:
+            content = f.read()
+
+        value = None
+        for line in content.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("#") or not stripped:
+                continue
+            if stripped.lower().startswith("clientalivecountmax"):
+                value = int(stripped.split()[1])
+                break
+
+        if value is not None and value <= 3:
+            result["status"] = "Pass"
+            result["details"] = f"ClientAliveCountMax is set to '{value}'"
+        elif value is not None:
+            result["status"] = "Fail"
+            result["details"] = f"ClientAliveCountMax is set to '{value}' — should be 3 or less"
+        else:
+            result["status"] = "Warn"
+            result["details"] = "ClientAliveCountMax not found. Idle sessions may not be terminated."
+
+    except FileNotFoundError:
+        result["status"] = "Error"
+        result["details"] = "sshd_config file not found"
+
+    return result
+
+
+
+
 CHECKS = [
     {
         "id": "5.2.8",
@@ -341,5 +380,11 @@ CHECKS = [
         "severity": "Medium",
         "remediation": "Set 'ClientAliveInterval 300' in /etc/ssh/sshd_config and restart sshd.",
         "fn": check_client_alive_interval
+    },
+    {
+        "id": "5.2.17",
+        "severity": "Medium",
+        "remediation": "Set 'ClientAliveCountMax 0' in /etc/ssh/sshd_config and restart sshd.",
+        "fn": check_client_alive_count_max
     }
 ]
